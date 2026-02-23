@@ -1,3 +1,6 @@
-Host *
-    IdentityFile ~/.ssh/school
+# ssh configration to connect to server using only key based authentication
+Host myserver
+    HostName 98.98.98.98
+    User ubuntu
+    IdentityFile school
     PasswordAuthentication no
