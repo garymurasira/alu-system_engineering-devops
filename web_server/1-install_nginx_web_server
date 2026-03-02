@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-# Installs and configures Nginx to serve a page with 'Holberton School'
-
-# Install nginx
+# Installs and configures Nginx web server
 apt-get update -y
 apt-get install -y nginx
-
-# Create the default page with required content
-echo 'Holberton School for the win!' > /var/www/html/index.html
-
-# Restart nginx without systemctl
-service nginx restart
-
+mkdir -p /var/www/html
+echo "Holberton School" > /var/www/html/index.html
+service nginx start
+nginx -s reload
