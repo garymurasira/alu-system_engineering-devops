@@ -1,25 +1,25 @@
 #!/usr/bin/env bash
 # Configure Nginx to run as nginx user and listen on port 8080
 
-# Ensure nginx user exists
+# Create nginx user if it doesn't exist
 id -u nginx &>/dev/null || useradd -r nginx
 
-# Stop nginx
+# Stop any running nginx
 pkill nginx 2>/dev/null || true
 
-# Force nginx to run as nginx user
+# Set nginx to run as nginx user
 sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf || \
 sed -i '1i user nginx;' /etc/nginx/nginx.conf
 
-# Change default site to listen on 8080
+# Change port to 8080
 sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
 sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-available/default
 sed -i 's/listen 80;/listen 8080;/' /etc/nginx/sites-available/default
 
-# Give nginx permission to needed folders
+# Fix permissions
 chown -R nginx:nginx /var/log/nginx
 chown -R nginx:nginx /var/cache/nginx
 chown -R nginx:nginx /var/run
 
-# Start nginx (IMPORTANT: run as nginx user)
-su -s /bin/sh nginx -c "nginx"
+# Run nginx in foreground as nginx user (THIS is the trick)
+su -s /bin/sh nginx -c "nginx -g 'daemon off;'"
