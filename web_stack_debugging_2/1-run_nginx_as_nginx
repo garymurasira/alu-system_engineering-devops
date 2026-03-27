@@ -2,29 +2,24 @@
 # Configure Nginx to run as nginx user and listen on port 8080
 
 # Ensure nginx user exists
-id -u nginx &>/dev/null || useradd -r -s /sbin/nologin nginx
+id -u nginx &>/dev/null || useradd -r nginx
 
-# Stop nginx if running
-service nginx stop 2>/dev/null || pkill nginx
+# Stop nginx
+pkill nginx 2>/dev/null || true
 
-# Update nginx config to run as nginx user
-sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-
-# If no user directive exists, add it
-grep -q "^user nginx;" /etc/nginx/nginx.conf || \
+# Force nginx to run as nginx user
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf || \
 sed -i '1i user nginx;' /etc/nginx/nginx.conf
 
-# Change listening port to 8080
+# Change default site to listen on 8080
 sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
 sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-available/default
-
-# Also replace any remaining listen 80
 sed -i 's/listen 80;/listen 8080;/' /etc/nginx/sites-available/default
 
-# Fix ownership of nginx directories
-chown -R nginx:nginx /var/cache/nginx
+# Give nginx permission to needed folders
 chown -R nginx:nginx /var/log/nginx
-chown -R nginx:nginx /var/lib/nginx 2>/dev/null || true
+chown -R nginx:nginx /var/cache/nginx
+chown -R nginx:nginx /var/run
 
-# Start nginx
-service nginx start
+# Start nginx (IMPORTANT: run as nginx user)
+su -s /bin/sh nginx -c "nginx"
