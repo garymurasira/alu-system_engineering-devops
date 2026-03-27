@@ -4,6 +4,5 @@ id -u nginx &>/dev/null || useradd --no-create-home nginx
 sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
 sed -i 's/listen 80 default_server/listen 8080 default_server/g' /etc/nginx/sites-enabled/default
 sed -i 's/listen \[\:\:\]\:80 default_server/listen [::]:8080 default_server/g' /etc/nginx/sites-enabled/default
-service nginx stop
+pkill nginx
 service nginx start
-su nginx -s /bin/bash -c "nginx -g 'daemon off;'" &
