@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 # Run nginx as nginx user on port 8080
 
+# Ensure user exists
+id nginx || useradd -r nginx
+
+# Kill any nginx
 pkill nginx 2>/dev/null || true
 
+# Force config
 sed -i '1i user nginx;' /etc/nginx/nginx.conf
-
 sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-available/default
 sed -i 's/listen 80;/listen 8080;/' /etc/nginx/sites-available/default
 
+# Start nginx in foreground as nginx
 su -s /bin/sh nginx -c "nginx -g 'daemon off;'" &
+
+# 🔥 KEEP PROCESS ALIVE + ENSURE VISIBILITY
+sleep 2
+ps aux | grep nginx
