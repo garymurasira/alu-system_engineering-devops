@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Configure nginx to run as nginx user listening on port 8080
-id -u nginx &>/dev/null || useradd --no-create-home nginx
+# Fix the container to run nginx as the nginx user on port 8080
+id -u nginx >/dev/null 2>&1 || useradd -r -s /usr/sbin/nologin nginx
 sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server/listen 8080 default_server/g' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[\:\:\]\:80 default_server/listen [::]:8080 default_server/g' /etc/nginx/sites-enabled/default
-pkill nginx
-service nginx start
+sed -i 's/listen 80 default_server;/listen 8080 default_server;/' /etc/nginx/sites-enabled/default
+sed -i 's/listen \[::\]:80 default_server;/listen [::]:8080 default_server;/' /etc/nginx/sites-enabled/default
+sed -i 's/listen \[::\]:80 default_server ipv6only=on;/listen [::]:8080 default_server ipv6only=on;/' /etc/nginx/sites-enabled/default
+service nginx restart
