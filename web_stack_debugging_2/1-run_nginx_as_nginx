@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # Configure nginx to run as nginx user listening on port 8080
-sed -i 's/worker_processes auto/worker_processes auto\nuser nginx;/' /etc/nginx/nginx.conf
-sed -i 's/user www-data;/user nginx;/g' /etc/nginx/nginx.conf
-sed -i 's/listen 80 default_server/listen 8080 default_server/g' /etc/nginx/sites-enabled/default
-sed -i 's/listen \[\:\:\]\:80 default_server/listen [::]:8080 default_server/g' /etc/nginx/sites-enabled/default
-service nginx stop
-nginx -g 'daemon off;' &
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+sed -i 's/listen 80/listen 8080/g' /etc/nginx/sites-enabled/default
+sed -i 's/listen \[\:\:\]\:80/listen [::]:8080/g' /etc/nginx/sites-enabled/default
 service nginx restart
